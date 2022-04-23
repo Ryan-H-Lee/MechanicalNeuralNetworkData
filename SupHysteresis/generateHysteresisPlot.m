@@ -37,6 +37,7 @@ figure(figureNumber)
 clf
 hold on;
 for index = [1,4]
+    index
    startPt = cyclePts(index);
    endPt = cyclePts(index + 1);
    vect = [startPt:endPt];
@@ -47,10 +48,13 @@ end
  ax.TickDir = 'in';
  ax.FontSize = 28;
  set(gca,'TickDir','out');
-xlim([-0.075,0.075])
-ylim([-0.125,0.125])
+xlim([-0.045,0.05])
+ylim([-0.04,0.065])
 ax.LineWidth = 2
 ax.Box = 'on'
+lines{1}.Color = [1 0 0];
+lines{1}.LineStyle = '--'
+lines{4}.Color = [0 0 1];
 
 
 %%
