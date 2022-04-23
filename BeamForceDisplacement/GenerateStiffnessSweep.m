@@ -23,10 +23,11 @@ close all
             temp_array = temp_cell;
         end
         %temp_array = cell2mat(temp_array);
+        indSet = abs( temp_array(:,2)) < 2.5;
         %Convert KgF to Newtons
-        temp_array( :, 3 ) = temp_array( :, 3 );
+        temp_arrayX = temp_array(indSet, 3 );
         %convert mm to m
-        temp_array( :, 2 ) = temp_array( :, 2);
+        temp_arrayY = temp_array(indSet, 2);
         
 %         %Generate Name for data object
 %         name1 = strsplit( dataObject(jj).folder, '\' );
@@ -34,7 +35,7 @@ close all
 %         name3 = erase( name2{1},"testRun");
 %         pGain = strrep( name3,'N','-');
        
-        p1 = polyfit(temp_array(:, 2), temp_array( :, 3),1) %linear fit the data
+        p1 = polyfit(temp_arrayY, temp_arrayX,1) %linear fit the data
         temp_array(:,4) = polyval(p1,temp_array(:, 2));
         kAll(:,jj) = p1';
         DM2{jj,1} = temp_array;
@@ -60,11 +61,22 @@ close all
  ylabel( 'Force (N)')
  title( 'Force vs Displacment for Single Link')
  
- %%
- figure(2) 
- hold on
- plot(gain2,stiffness2(:,2),'*')
- 
+%%
+figure(2) 
+clf
+plot([-2.5, 2.5],[-2.5, 2.5],'r','LineWidth',2.25)
+hold on
+plot(gain2,stiffness2(:,2),'b.','MarkerSize', 30)
+plot([-2.5, 2.5],[-2,-2], 'k:','LineWidth', 2)
+plot([-2.5, 2.5],[2.3,2.3], 'k:','LineWidth', 2)
+hold on
+
+ax = gca;
+ax.XLim = [-2.5, 2.5]
+ax.YLim = [-2.5, 2.5]
+ax.FontSize = 30
+ax.LineWidth = 2
+axis square
  %%
  lw = 1.5;
           
