@@ -7,9 +7,8 @@ clear
 close all
 clc
 %%
-fprintf('Generating Linear vs Nonlinear Plot\n\n')
 maxProfile = 2;
-
+FixedStops = true;% false %true
 profileName = {'LINEAR', 'NONLINEAR'};
 defaultPath = [''];
 simplePlot = true;
@@ -65,7 +64,7 @@ for behSet = 1:nSets
         %Load a data set from the list
         currentName = fileList_local{profile}{behSet, runNum};
         testString = 'EMPTY';
-        if  currentName(1:length(testString)) == testString;
+        if  currentName(1:length(testString)) == testString
             break
         end
         load([mainPath,'\', currentName]);
@@ -74,7 +73,6 @@ for behSet = 1:nSets
         %Prep data for processing
         if exist('eHistB', 'var')
             mseVect = eHistB;
-%             timeBest = timeVect';
             timeBest = tHistB(1,:);
             timeALL = tHistA(1,:);
             %To compensate for timeALL(intit to 0)
@@ -91,11 +89,9 @@ for behSet = 1:nSets
             end
 
             %Set stopping point for the data plots.
-            FixedStops = true;
             if FixedStops
                 stopInd = length(mseVect);
             else
-                %
                 figure(21)
                 clf
                 plot(mseVect)
@@ -113,7 +109,6 @@ for behSet = 1:nSets
             stopSet = 1:stopInd;
             %Create a vector with each index filled this will be used for averaging
             mseFull = fillStepVector(bestIndex(stopSet), mseVect(stopSet), length(timeALL));
-
             
             %Add mseFull as new row in mseRuns{profile}
             mseIter{behSet + (profile-1)*nSets} = stackData(mseFull, mseIter{behSet + (profile-1)*nSets});
@@ -154,32 +149,38 @@ meanTime = mean(msePackedTime, 3);
 minTime = min(msePackedTime, [],3);
 %Group each set by profile
 for ind = 1:maxProfile
-    pInd = (maxProfile)*(ind-1) + (1:nSets);
+    startInd = ((maxProfile*nSets)/2)*(ind-1) + 1;
+    endInd = (maxProfile*nSets)/2 *(ind);
+    pInd = startInd:endInd;
     meanPlotInds(:,ind) = mean(meanIter(pInd,:)',2);
     minPlotInds(:,ind)  = mean( minIter(pInd,:)',2);
     meanPlotTime(:,ind) = mean(meanTime(pInd,:)',2);
     minPlotTime(:,ind)  = mean( minTime(pInd,:)',2);
     
 end
-%% Plot that  Calculate Data
+%%
 %Plot each of the 4 charts
 colorList = [[ 0; 0 ; 1],[0, 0, 1]'];
 indexX = [1:length(meanPlotInds)]';
 styleList = {'-',':'};
-% title('minIndsLines')
+
+
+%Convert time vector in Minutes to time vector in Hours
 timeX = [(1:length(minPlotTime))/60]';
 meanTimeLines = plotFunction(timeX, meanPlotTime, colorList,styleList, 30);
 ax = gca;
-ax.XLim = [0, 35]; %trim constant Data
-
+ax.XLim = [0, 80];
+ax.YLim = [0.05, 0.16]
+% title('meanTimeLines')
+minTimeLines = plotFunction(timeX, minPlotTime, colorList,styleList, 40);
+% title('minTimeLines')
 legend('Linear','Nonlinear')
-
-%%  The function used to plot each data set
+ax = gca;
+ax.XLim = [0, 80];
+ax.YLim = [0.05, 0.15]
+% The function used to plot each data set
+%% Function used to plot the data
 function lineCell = plotFunction(xValues, yValues, colorList, styleList, figNum)
-% colorList = [[ 1; 0 ; 0],[0, 0, 1]'];
-% yValues = minPlotInds
-dec = 2;
-
 if size(xValues,2) < size(yValues,2)
     xPlot = repmat(xValues, 1, size(yValues,2));
 else
@@ -192,7 +193,7 @@ else
     figure(figNum)
     clf
 end
-
+dec = 2;
 for ind = 1:size(yValues,2)
     lineCell{ind} = plot(xPlot(:,ind), yValues(:,ind), 'Color', colorList(:,ind), 'LineStyle', styleList{ind}, 'LineWidth',2.5);
     hold on
@@ -203,15 +204,6 @@ ax.LineWidth = 2.5;
 ax.XLim = [min(xValues(:,1)), max(xValues(:,1))];
 ax.YLim = [floor(min(yValues, [], 'all')*10^(dec))/10^dec, ceil(max(yValues,[],'all')*10^(dec))/10^dec];
 ax.FontSize = 25;
-
+%ax.FontName = 'Helvetica'
 ax.FontName = 'Calibri';
 end
-% Copy data from local vaiables
-
-    % Clear local variables
-
-    % Determine the minimum value for each set of runs (The best run)
-    
-    % Take the average of all of the data sets
-    
-    % Plot this curve
